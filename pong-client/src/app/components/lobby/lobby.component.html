@@ -3,6 +3,7 @@
     <h1>🏓 Pong Online - Lobby</h1>
     <div class="user-info">
       <span>Bienvenue, <strong>{{ username }}</strong></span>
+      <button class="btn-admin" (click)="goToAdmin()" *ngIf="isAdmin()">🛡️ Admin</button>
       <button class="btn-logout" (click)="logout()">Déconnexion</button>
     </div>
   </header>

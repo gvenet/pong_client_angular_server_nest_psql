@@ -2,15 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-
-interface User {
-  id: string;
-  username: string;
-  email: string;
-  elo: number;
-  wins?: number;
-  losses?: number;
-}
+import { User } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -79,5 +71,21 @@ export class AuthService {
 
   getToken(): string | null {
     return this.storage.getItem('token');
+  }
+
+  isAdmin(): boolean {
+    const user = this.currentUser;
+    return user?.role === 'admin';
+  }
+
+  refreshUserProfile(): Observable<User> {
+    // L'intercepteur HTTP ajoutera automatiquement le token
+    return this.http.get<User>('http://localhost:3000/users/profile').pipe(
+      tap(user => {
+        // Mettre à jour l'utilisateur en sessionStorage et dans le subject
+        this.storage.setItem('user', JSON.stringify(user));
+        this.currentUserSubject.next(user);
+      })
+    );
   }
 }

@@ -26,7 +26,7 @@ export class AuthService {
     const user = await this.usersService.create(username, email, password);
 
     // Générer le token
-    const payload = { username: user.username, sub: user.id };
+    const payload = { username: user.username, sub: user.id, role: user.role };
     return {
       access_token: this.jwtService.sign(payload),
       user: {
@@ -34,6 +34,7 @@ export class AuthService {
         username: user.username,
         email: user.email,
         elo: user.elo,
+        role: user.role,
       },
     };
   }
@@ -57,7 +58,7 @@ export class AuthService {
     }
 
     // Générer le token
-    const payload = { username: user.username, sub: user.id };
+    const payload = { username: user.username, sub: user.id, role: user.role };
     return {
       access_token: this.jwtService.sign(payload),
       user: {
@@ -67,6 +68,7 @@ export class AuthService {
         elo: user.elo,
         wins: user.wins,
         losses: user.losses,
+        role: user.role,
       },
     };
   }

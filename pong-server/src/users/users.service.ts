@@ -52,4 +52,23 @@ export class UsersService {
 
     await this.usersRepository.save(user);
   }
+
+  async findAll(): Promise<User[]> {
+    return this.usersRepository.find({
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.usersRepository.delete(id);
+  }
+
+  async updateRole(id: string, role: string): Promise<User> {
+    const user = await this.findById(id);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    user.role = role;
+    return this.usersRepository.save(user);
+  }
 }

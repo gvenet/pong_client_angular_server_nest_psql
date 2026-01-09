@@ -244,6 +244,14 @@ export class LobbyComponent implements OnInit, OnDestroy {
     return `${Math.floor(seconds / 86400)}j`;
   }
 
+  isAdmin(): boolean {
+    return this.authService.isAdmin();
+  }
+
+  goToAdmin() {
+    this.router.navigate(['/admin']);
+  }
+
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);
