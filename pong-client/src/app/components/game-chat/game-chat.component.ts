@@ -1,5 +1,5 @@
-// src/app/components/chat/chat.component.ts
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+// src/app/components/game-chat/game-chat.component.ts
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChatService, ChatMessage } from '../../services/chat.service';
@@ -7,19 +7,20 @@ import { AuthService } from '../../services/auth.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-chat',
+  selector: 'app-game-chat',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.css']
+  templateUrl: './game-chat.component.html',
+  styleUrls: ['./game-chat.component.css']
 })
-export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
+export class GameChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
+  @Input() gameId!: string;
 
   messages: ChatMessage[] = [];
   newMessage = '';
   loading = false;
-  
+
   private newMessageSubscription?: Subscription;
   private recentMessagesSubscription?: Subscription;
   private shouldScrollToBottom = false;
@@ -30,14 +31,22 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   ) {}
 
   ngOnInit() {
+    console.log('Game chat initialized for game:', this.gameId);
+
     // Connecter le chat
     this.chatService.connect();
+
+    // Rejoindre la room de la partie
+    setTimeout(() => {
+      this.chatService.joinGameRoom(this.gameId);
+    }, 500);
 
     // Écouter les nouveaux messages
     this.newMessageSubscription = this.chatService.onNewMessage().subscribe({
       next: (message) => {
-        // Filtrer pour n'afficher que les messages globaux (pas de game_id)
-        if (message.game_id === null) {
+        console.log('New message received:', message, 'gameId:', message.game_id, 'expected:', this.gameId);
+        // Filtrer pour n'afficher que les messages de cette partie
+        if (message.game_id === this.gameId) {
           this.messages.push(message);
           this.shouldScrollToBottom = true;
         }
@@ -50,18 +59,19 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     // Écouter les messages récents
     this.recentMessagesSubscription = this.chatService.onRecentMessages().subscribe({
       next: (messages) => {
-        // Filtrer pour ne garder que les messages globaux, puis inverser l'ordre
+        console.log('Recent messages received:', messages.length, 'for game:', this.gameId);
+        // Filtrer et trier les messages de cette partie
         this.messages = messages
-          .filter(m => m.game_id === null)
-          .reverse();
+          .filter(m => m.game_id === this.gameId)
+          .sort((a, b) => new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime());
         this.shouldScrollToBottom = true;
       }
     });
 
-    // Charger les messages récents
+    // Charger les messages récents de cette partie
     setTimeout(() => {
-      this.chatService.getRecentMessages(50);
-    }, 500);
+      this.chatService.getRecentMessages(50, this.gameId);
+    }, 800);
   }
 
   ngAfterViewChecked() {
@@ -78,8 +88,9 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     if (this.recentMessagesSubscription) {
       this.recentMessagesSubscription.unsubscribe();
     }
-    // Déconnecter le chat lors de la destruction du composant
-    this.chatService.disconnect();
+    // Quitter la room de la partie
+    this.chatService.leaveGameRoom(this.gameId);
+    // Ne pas déconnecter le chat ici car il pourrait être utilisé ailleurs
   }
 
   sendMessage() {
@@ -87,7 +98,8 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       return;
     }
 
-    this.chatService.sendMessage(this.newMessage);
+    console.log('Sending message to game:', this.gameId, 'message:', this.newMessage);
+    this.chatService.sendMessage(this.newMessage, this.gameId);
     this.newMessage = '';
   }
 

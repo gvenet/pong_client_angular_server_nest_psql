@@ -24,8 +24,10 @@ export class ChatService {
   constructor(private authService: AuthService) {}
 
   connect(): void {
-    if (this.socket?.connected) {
-      return;
+    // Toujours déconnecter l'ancienne connexion avant d'en créer une nouvelle
+    if (this.socket) {
+      this.socket.disconnect();
+      this.socket = null;
     }
 
     const token = this.authService.getToken();
@@ -34,14 +36,18 @@ export class ChatService {
       return;
     }
 
+    const currentUser = this.authService.currentUser;
+    console.log('Connecting chat with user:', currentUser?.username);
+
     this.socket = io('http://localhost:3000', {
       auth: {
         token: token
-      }
+      },
+      forceNew: true // Force une nouvelle connexion à chaque fois
     });
 
     this.socket.on('connect', () => {
-      console.log('Chat WebSocket connected');
+      console.log('Chat WebSocket connected for user:', currentUser?.username);
     });
 
     this.socket.on('disconnect', () => {
@@ -116,5 +122,23 @@ export class ChatService {
 
   isConnected(): boolean {
     return this.socket?.connected || false;
+  }
+
+  joinGameRoom(gameId: string): void {
+    if (!this.socket) {
+      console.error('Chat socket not connected');
+      return;
+    }
+    console.log('Joining game chat room:', gameId);
+    this.socket.emit('joinChatRoom', { gameId });
+  }
+
+  leaveGameRoom(gameId: string): void {
+    if (!this.socket) {
+      console.error('Chat socket not connected');
+      return;
+    }
+    console.log('Leaving game chat room:', gameId);
+    this.socket.emit('leaveChatRoom', { gameId });
   }
 }

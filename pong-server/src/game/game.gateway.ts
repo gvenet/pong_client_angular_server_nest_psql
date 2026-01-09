@@ -67,36 +67,46 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const game = this.gameService.getGameById(client.gameId);
 
         if (game && game.status !== GameStatus.FINISHED) {
-          // Déterminer le gagnant (l'autre joueur)
-          let winner: string;
-          let winnerScore = 10;
-          let loserScore = 0;
+          // Vérifier si le client déconnecté est un joueur réel (pas un spectateur)
+          const isPlayer1 = game.player1.id === client.userId;
+          const isPlayer2 = game.player2?.id === client.userId;
+          const isPlayer = isPlayer1 || isPlayer2;
 
-          if (game.player1.id === client.userId) {
-            // Player1 s'est déconnecté, Player2 gagne
-            winner = game.player2?.username || 'Unknown';
-            this.gameService.updateScore(client.gameId, loserScore, winnerScore);
+          if (isPlayer) {
+            // Seule la déconnexion d'un joueur réel déclenche un forfait
+            let winner: string;
+            let winnerScore = 10;
+            let loserScore = 0;
+
+            if (isPlayer1) {
+              // Player1 s'est déconnecté, Player2 gagne
+              winner = game.player2?.username || 'Unknown';
+              this.gameService.updateScore(client.gameId, loserScore, winnerScore);
+            } else {
+              // Player2 s'est déconnecté, Player1 gagne
+              winner = game.player1.username;
+              this.gameService.updateScore(client.gameId, winnerScore, loserScore);
+            }
+
+            // Notifier la victoire par forfait
+            this.server.to(client.gameId).emit('gameFinished', {
+              winner: winner,
+              score1: isPlayer1 ? loserScore : winnerScore,
+              score2: isPlayer2 ? loserScore : winnerScore,
+              reason: 'disconnect'
+            });
+
+            console.log(`Player ${client.username} disconnected from game ${client.gameId}. ${winner} wins by forfeit.`);
+
+            // Supprimer la partie après un délai pour laisser le temps de voir le message
+            setTimeout(() => {
+              this.gameService.deleteGame(client.gameId!);
+              console.log(`Game ${client.gameId} deleted after player disconnect`);
+            }, 5000);
           } else {
-            // Player2 s'est déconnecté, Player1 gagne
-            winner = game.player1.username;
-            this.gameService.updateScore(client.gameId, winnerScore, loserScore);
+            // Spectateur déconnecté - ne rien faire
+            console.log(`Spectator ${client.username} disconnected from game ${client.gameId} (no forfeit)`);
           }
-
-          // Notifier la victoire par forfait
-          this.server.to(client.gameId).emit('gameFinished', {
-            winner: winner,
-            score1: game.player1.id === client.userId ? loserScore : winnerScore,
-            score2: game.player2?.id === client.userId ? loserScore : winnerScore,
-            reason: 'disconnect'
-          });
-
-          console.log(`Player ${client.username} disconnected from game ${client.gameId}. ${winner} wins by forfeit.`);
-
-          // Supprimer la partie après un délai pour laisser le temps de voir le message
-          setTimeout(() => {
-            this.gameService.deleteGame(client.gameId!);
-            console.log(`Game ${client.gameId} deleted after player disconnect`);
-          }, 5000);
         }
       }
     }

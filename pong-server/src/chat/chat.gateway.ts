@@ -63,16 +63,26 @@ export class ChatGateway implements OnGatewayConnection {
       data.gameId,
     );
 
-    // Charger le message avec les infos utilisateur
-    const messageWithUser = await this.chatService.getGlobalMessages(1);
+    // Recharger le message avec les relations utilisateur
+    let messageWithUser;
+    if (data.gameId) {
+      // Pour un message de partie, charger directement depuis la base
+      const messages = await this.chatService.getGameMessages(data.gameId);
+      messageWithUser = messages[messages.length - 1]; // Dernier message
+    } else {
+      // Pour le chat global
+      const messages = await this.chatService.getGlobalMessages(1);
+      messageWithUser = messages[0];
+    }
 
     // Broadcast le message
     if (data.gameId) {
-      // Message pour une partie spécifique
-      this.server.to(data.gameId).emit('newMessage', messageWithUser[0]);
+      // Message pour une partie spécifique - envoyer à tous les clients de la room (y compris l'émetteur)
+      this.server.in(data.gameId).emit('newMessage', messageWithUser);
+      console.log(`Message sent to game room ${data.gameId} by ${client.username}`);
     } else {
       // Message global
-      this.server.emit('newMessage', messageWithUser[0]);
+      this.server.emit('newMessage', messageWithUser);
     }
   }
 
@@ -81,8 +91,8 @@ export class ChatGateway implements OnGatewayConnection {
     @MessageBody() data: { gameId: string },
     @ConnectedSocket() client: AuthenticatedSocket,
   ) {
-    client.join(`chat-${data.gameId}`);
-    console.log(`${client.username} joined chat room: chat-${data.gameId}`);
+    client.join(data.gameId);
+    console.log(`${client.username} joined chat room: ${data.gameId}`);
   }
 
   @SubscribeMessage('leaveChatRoom')
@@ -90,8 +100,8 @@ export class ChatGateway implements OnGatewayConnection {
     @MessageBody() data: { gameId: string },
     @ConnectedSocket() client: AuthenticatedSocket,
   ) {
-    client.leave(`chat-${data.gameId}`);
-    console.log(`${client.username} left chat room: chat-${data.gameId}`);
+    client.leave(data.gameId);
+    console.log(`${client.username} left chat room: ${data.gameId}`);
   }
 
   @SubscribeMessage('getRecentMessages')

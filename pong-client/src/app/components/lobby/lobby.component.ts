@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { GameService } from '../../services/game.service';
+import { ChatComponent } from '../chat/chat.component';
 import { Game, GameStatus } from '../../models/game.model';
 import { interval, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -11,7 +12,7 @@ import { switchMap } from 'rxjs/operators';
 @Component({
   selector: 'app-lobby',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ChatComponent],
   templateUrl: './lobby.component.html',
   styleUrls: ['./lobby.component.css']
 })
@@ -21,6 +22,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
   loading = false;
   error = '';
   private refreshSubscription?: Subscription;
+  private userSubscription?: Subscription;
 
   GameStatus = GameStatus;
 
@@ -35,9 +37,22 @@ export class LobbyComponent implements OnInit, OnDestroy {
     if (user) {
       this.username = user.username;
     }
-    
+
+    // Surveiller les changements d'utilisateur
+    this.userSubscription = this.authService.currentUser$.subscribe({
+      next: (user) => {
+        if (user) {
+          this.username = user.username;
+          console.log('User changed in lobby:', user.username);
+        } else {
+          // Si plus d'utilisateur, rediriger vers login
+          this.router.navigate(['/login']);
+        }
+      }
+    });
+
     this.loadGames();
-    
+
     this.refreshSubscription = interval(3000)
       .pipe(switchMap(() => this.gameService.getAllGames()))
       .subscribe({
@@ -53,6 +68,9 @@ export class LobbyComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.refreshSubscription) {
       this.refreshSubscription.unsubscribe();
+    }
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
     }
   }
 

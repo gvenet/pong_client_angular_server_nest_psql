@@ -35,26 +35,34 @@
       <button class="btn-primary" (click)="backToLobby()">Retour au lobby</button>
     </div>
 
-    <div class="canvas-container" *ngIf="!loading && !error">
-      <canvas #gameCanvas></canvas>
-      
-      <div class="controls" *ngIf="game && game.status === GameStatus.PLAYING">
-        <p [class.spectator-mode]="isSpectator">
-          <span *ngIf="isSpectator">👁️</span> {{ getControls() }}
-        </p>
-      </div>
-      
-      <div class="waiting-message" *ngIf="game && game.status === GameStatus.WAITING">
-        <p>En attente d'un adversaire...</p>
-        <p class="small">Partagez l'ID de la partie : <strong>{{ gameId }}</strong></p>
+    <div class="game-layout" *ngIf="!loading && !error">
+      <div class="game-section">
+        <div class="canvas-container">
+          <canvas #gameCanvas></canvas>
+
+          <div class="controls" *ngIf="game && game.status === GameStatus.PLAYING">
+            <p [class.spectator-mode]="isSpectator">
+              <span *ngIf="isSpectator">👁️</span> {{ getControls() }}
+            </p>
+          </div>
+
+          <div class="waiting-message" *ngIf="game && game.status === GameStatus.WAITING">
+            <p>En attente d'un adversaire...</p>
+            <p class="small">Partagez l'ID de la partie : <strong>{{ gameId }}</strong></p>
+          </div>
+
+          <div class="game-over" *ngIf="game && game.status === GameStatus.FINISHED">
+            <h2>{{ disconnectReason ? '🏆 Victoire par abandon !' : '🏆 Partie terminée !' }}</h2>
+            <p class="winner-text">Victoire de <strong>{{ winner }}</strong> !</p>
+            <p class="final-score">Score final : {{ game.score1 }} - {{ game.score2 }}</p>
+            <p *ngIf="disconnectReason" class="disconnect-message">{{ disconnectReason }}</p>
+            <button class="btn-primary" (click)="backToLobby()">Retour au lobby</button>
+          </div>
+        </div>
       </div>
 
-      <div class="game-over" *ngIf="game && game.status === GameStatus.FINISHED">
-        <h2>{{ disconnectReason ? '🏆 Victoire par abandon !' : '🏆 Partie terminée !' }}</h2>
-        <p class="winner-text">Victoire de <strong>{{ winner }}</strong> !</p>
-        <p class="final-score">Score final : {{ game.score1 }} - {{ game.score2 }}</p>
-        <p *ngIf="disconnectReason" class="disconnect-message">{{ disconnectReason }}</p>
-        <button class="btn-primary" (click)="backToLobby()">Retour au lobby</button>
+      <div class="chat-section">
+        <app-game-chat [gameId]="gameId"></app-game-chat>
       </div>
     </div>
   </div>

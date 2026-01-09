@@ -5,13 +5,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { GameService } from '../../services/game.service';
 import { AuthService } from '../../services/auth.service';
 import { WebsocketService } from '../../services/websocket.service';
+import { GameChatComponent } from '../game-chat/game-chat.component';
 import { Game, GameStatus } from '../../models/game.model';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-game',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, GameChatComponent],
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.css']
 })

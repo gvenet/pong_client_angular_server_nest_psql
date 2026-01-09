@@ -41,14 +41,43 @@
 
 .lobby-content {
   padding: 2rem;
-  max-width: 1200px;
+  max-width: 1600px;
   margin: 0 auto;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chat-section {
+    height: 500px;
+  }
+}
+
+.games-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-section {
+  position: sticky;
+  top: 2rem;
+  height: calc(100vh - 140px);
+  min-height: 600px;
 }
 
 .action-bar {
   display: flex;
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .btn-new-game, .btn-refresh {
@@ -96,8 +125,9 @@
 }
 
 .games-section h2 {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   color: #333;
+  font-size: 1.4rem;
 }
 
 .games-container {

@@ -27,6 +27,20 @@ export class AuthService {
     if (user) {
       this.currentUserSubject.next(JSON.parse(user));
     }
+
+    // Écouter les changements de sessionStorage (autre onglet)
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', (event) => {
+        if (event.key === 'user' || event.key === 'token') {
+          const newUser = this.storage.getItem('user');
+          if (newUser) {
+            this.currentUserSubject.next(JSON.parse(newUser));
+          } else {
+            this.currentUserSubject.next(null);
+          }
+        }
+      });
+    }
   }
 
   register(username: string, email: string, password: string): Observable<any> {
