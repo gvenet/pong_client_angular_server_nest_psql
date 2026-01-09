@@ -2,6 +2,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany } from 'typeorm';
 import { GameHistory } from '../../games-history/entities/game-history.entity';
 import { ChatMessage } from '../../chat/entities/chat-message.entity';
+import { Friendship } from './friendship.entity';
 
 @Entity('users')
 export class User {
@@ -40,4 +41,7 @@ export class User {
 
   @OneToMany(() => ChatMessage, (message) => message.user)
   messages: ChatMessage[];
+
+  @OneToMany(() => Friendship, (friendship) => friendship.user)
+  friendships: Friendship[];
 }

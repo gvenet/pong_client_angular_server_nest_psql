@@ -252,6 +252,10 @@ export class LobbyComponent implements OnInit, OnDestroy {
     this.router.navigate(['/admin']);
   }
 
+  goToProfile() {
+    this.router.navigate(['/profile']);
+  }
+
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);

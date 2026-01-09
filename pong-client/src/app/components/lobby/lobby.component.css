@@ -24,6 +24,24 @@
   gap: 1rem;
 }
 
+.btn-profile {
+  padding: 0.5rem 1rem;
+  background: rgba(255,255,255,0.9);
+  color: #667eea;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.btn-profile:hover {
+  background: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
 .btn-admin {
   padding: 0.5rem 1rem;
   background: rgba(255,255,255,0.9);

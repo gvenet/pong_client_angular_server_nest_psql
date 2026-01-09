@@ -4,6 +4,7 @@ import { LoginComponent } from './components/login/login.component';
 import { LobbyComponent } from './components/lobby/lobby.component';
 import { GameComponent } from './components/game/game.component';
 import { AdminComponent } from './components/admin/admin.component';
+import { ProfileComponent } from './components/profile/profile.component';
 import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -11,6 +12,7 @@ export const routes: Routes = [
   { path: 'lobby', component: LobbyComponent, canActivate: [AuthGuard] },
   { path: 'game/:id', component: GameComponent, canActivate: [AuthGuard] },
   { path: 'admin', component: AdminComponent, canActivate: [AuthGuard] },
+  { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
   { path: '', redirectTo: '/login', pathMatch: 'full' }
 ];
 export enum GameStatus {

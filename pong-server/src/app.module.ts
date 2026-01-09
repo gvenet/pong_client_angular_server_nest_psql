@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { GamesHistoryModule } from './games-history/games-history.module';
 import { ChatModule } from './chat/chat.module';
 import { User } from './users/entities/user.entity';
+import { Friendship } from './users/entities/friendship.entity';
 import { GameHistory } from './games-history/entities/game-history.entity';
 import { ChatMessage } from './chat/entities/chat-message.entity';
 
@@ -18,7 +19,7 @@ import { ChatMessage } from './chat/entities/chat-message.entity';
       username: 'pong_user',
       password: 'pong_password',
       database: 'pong_db',
-      entities: [User, GameHistory, ChatMessage],
+      entities: [User, Friendship, GameHistory, ChatMessage],
       synchronize: true, // ⚠️ À mettre false en production
       logging: true,
     }),

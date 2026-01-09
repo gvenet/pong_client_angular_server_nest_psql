@@ -1,0 +1,184 @@
+<!-- src/app/components/profile/profile.component.html -->
+<div class="profile-container">
+  <div class="profile-header">
+    <h1>👤 Mon Profil</h1>
+    <button class="btn-back" (click)="backToLobby()">← Retour au lobby</button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button
+      class="tab"
+      [class.active]="selectedTab === 'profile'"
+      (click)="switchTab('profile')">
+      ⚙️ Profil
+    </button>
+    <button
+      class="tab"
+      [class.active]="selectedTab === 'friends'"
+      (click)="switchTab('friends')">
+      👥 Amis ({{ friends.length }})
+    </button>
+  </div>
+
+  <!-- Messages -->
+  <div class="message success" *ngIf="success">{{ success }}</div>
+  <div class="message error" *ngIf="error">{{ error }}</div>
+
+  <div class="profile-content">
+    <!-- Profile Tab -->
+    <div *ngIf="selectedTab === 'profile' && user">
+      <div class="profile-section">
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value">{{ user.elo }}</div>
+            <div class="stat-label">ELO</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">{{ user.wins }}</div>
+            <div class="stat-label">Victoires</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">{{ user.losses }}</div>
+            <div class="stat-label">Défaites</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">{{ getWinRate(user) }}%</div>
+            <div class="stat-label">Win Rate</div>
+          </div>
+        </div>
+
+        <!-- Username -->
+        <div class="field-group">
+          <label>Nom d'utilisateur</label>
+          <div class="field-content" *ngIf="!editingUsername">
+            <span class="field-value">{{ user.username }}</span>
+            <button class="btn-edit" (click)="editingUsername = true">✏️ Modifier</button>
+          </div>
+          <div class="field-edit" *ngIf="editingUsername">
+            <input
+              type="text"
+              [(ngModel)]="newUsername"
+              placeholder="Nouveau nom d'utilisateur"
+              class="input-field">
+            <div class="field-actions">
+              <button class="btn-save" (click)="saveUsername()">✓ Enregistrer</button>
+              <button class="btn-cancel" (click)="cancelEdit('username')">✗ Annuler</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="field-group">
+          <label>Email</label>
+          <div class="field-content" *ngIf="!editingEmail">
+            <span class="field-value">{{ user.email }}</span>
+            <button class="btn-edit" (click)="editingEmail = true">✏️ Modifier</button>
+          </div>
+          <div class="field-edit" *ngIf="editingEmail">
+            <input
+              type="email"
+              [(ngModel)]="newEmail"
+              placeholder="Nouvel email"
+              class="input-field">
+            <div class="field-actions">
+              <button class="btn-save" (click)="saveEmail()">✓ Enregistrer</button>
+              <button class="btn-cancel" (click)="cancelEdit('email')">✗ Annuler</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="field-group">
+          <label>Mot de passe</label>
+          <div class="field-content" *ngIf="!editingPassword">
+            <span class="field-value">••••••••</span>
+            <button class="btn-edit" (click)="editingPassword = true">✏️ Modifier</button>
+          </div>
+          <div class="field-edit" *ngIf="editingPassword">
+            <input
+              type="password"
+              [(ngModel)]="currentPassword"
+              placeholder="Mot de passe actuel"
+              class="input-field">
+            <input
+              type="password"
+              [(ngModel)]="newPassword"
+              placeholder="Nouveau mot de passe"
+              class="input-field">
+            <input
+              type="password"
+              [(ngModel)]="confirmPassword"
+              placeholder="Confirmer le nouveau mot de passe"
+              class="input-field">
+            <div class="field-actions">
+              <button class="btn-save" (click)="savePassword()">✓ Enregistrer</button>
+              <button class="btn-cancel" (click)="cancelEdit('password')">✗ Annuler</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Friends Tab -->
+    <div *ngIf="selectedTab === 'friends'">
+      <div class="friends-section">
+        <!-- Search -->
+        <div class="search-box">
+          <input
+            type="text"
+            [(ngModel)]="searchQuery"
+            (ngModelChange)="searchUsers()"
+            placeholder="Rechercher un utilisateur..."
+            class="search-input">
+
+          <div class="search-results" *ngIf="searchResults.length > 0">
+            <div
+              *ngFor="let user of searchResults"
+              class="search-result-item">
+              <div class="user-info">
+                <strong>{{ user.username }}</strong>
+                <span class="elo-badge">{{ user.elo }} ELO</span>
+              </div>
+              <button
+                class="btn-add"
+                *ngIf="!isFriend(user.id)"
+                (click)="addFriend(user.id)">
+                + Ajouter
+              </button>
+              <span class="already-friend" *ngIf="isFriend(user.id)">
+                ✓ Déjà ami
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Friends List -->
+        <div class="friends-list" *ngIf="friends.length > 0">
+          <h3>Mes amis</h3>
+          <div class="friend-card" *ngFor="let friend of friends">
+            <div class="friend-info">
+              <div class="friend-name">
+                <strong>{{ friend.username }}</strong>
+              </div>
+              <div class="friend-stats">
+                <span class="stat">{{ friend.elo }} ELO</span>
+                <span class="stat">{{ friend.wins }}V / {{ friend.losses }}D</span>
+                <span class="stat">{{ getWinRate(friend) }}% WR</span>
+              </div>
+            </div>
+            <button class="btn-remove" (click)="removeFriend(friend)">
+              🗑️ Retirer
+            </button>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="friends.length === 0">
+          <p>Vous n'avez pas encore d'amis</p>
+          <p>Utilisez la barre de recherche pour en ajouter !</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
