@@ -1,0 +1,16 @@
+# docker-compose.yml
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: pong_db
+      POSTGRES_USER: pong_user
+      POSTGRES_PASSWORD: pong_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

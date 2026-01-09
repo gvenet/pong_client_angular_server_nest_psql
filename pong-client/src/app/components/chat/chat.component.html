@@ -1,0 +1,41 @@
+<div class="chat-container">
+  <div class="chat-header">
+    <h3>💬 Chat Global</h3>
+  </div>
+
+  <div class="messages-container" #messagesContainer>
+    <div class="message" 
+         *ngFor="let message of messages"
+         [class.my-message]="isMyMessage(message)">
+      <div class="message-header">
+        <span class="username">{{ message.user.username }}</span>
+        <span class="time">{{ getTimeString(message.sentAt) }}</span>
+      </div>
+      <div class="message-content">
+        {{ message.message }}
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="messages.length === 0">
+      <p>Aucun message pour le moment</p>
+      <p class="small">Soyez le premier à écrire !</p>
+    </div>
+  </div>
+
+  <div class="chat-input">
+    <form (ngSubmit)="sendMessage()">
+      <input
+        type="text"
+        [(ngModel)]="newMessage"
+        name="message"
+        placeholder="Écrivez votre message..."
+        class="input-field"
+        maxlength="500"
+        autocomplete="off"
+      />
+      <button type="submit" class="btn-send" [disabled]="!newMessage.trim()">
+        ➤
+      </button>
+    </form>
+  </div>
+</div>

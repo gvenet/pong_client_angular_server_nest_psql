@@ -1,0 +1,191 @@
+.game-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: white;
+}
+
+.game-header {
+  padding: 1.5rem 2rem;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+}
+
+.btn-back {
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+  font-size: 0.9rem;
+}
+
+.btn-back:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.game-info {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+}
+
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.2rem;
+}
+
+.player-name {
+  font-weight: 600;
+}
+
+.score {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #667eea;
+}
+
+.status {
+  text-align: center;
+  font-weight: 600;
+}
+
+.waiting {
+  color: #ffc107;
+}
+
+.playing {
+  color: #4caf50;
+}
+
+.finished {
+  color: #ff5722;
+}
+
+.game-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 100px);
+  padding: 2rem;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 3rem;
+}
+
+.error p {
+  color: #ff5722;
+  margin-bottom: 1rem;
+}
+
+.btn-primary {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.canvas-container {
+  position: relative;
+  display: inline-block;
+}
+
+canvas {
+  border: 3px solid #667eea;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.controls {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 1.1rem;
+}
+
+.controls strong {
+  color: #667eea;
+}
+
+.waiting-message {
+  text-align: center;
+  margin-top: 2rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.waiting-message .small {
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  color: #aaa;
+}
+
+.waiting-message strong {
+  color: #667eea;
+  font-family: monospace;
+}
+
+.game-over {
+  text-align: center;
+  margin-top: 2rem;
+  padding: 3rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.game-over h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #ffd700;
+}
+
+.winner-text {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.winner-text strong {
+  color: #667eea;
+}
+
+.final-score {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  color: #fff;
+}
+
+.disconnect-message {
+  color: #ffc107;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  font-style: italic;
+}
+
+.spectator-mode {
+  color: #4caf50;
+  font-weight: 600;
+  font-size: 1.2rem;
+}

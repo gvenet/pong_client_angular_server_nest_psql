@@ -1,0 +1,62 @@
+<div class="login-container">
+  <div class="login-card">
+    <h1>🏓 Pong Online</h1>
+    <h2>{{ isRegisterMode ? 'Inscription' : 'Connexion' }}</h2>
+    
+    <form (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="username">Nom d'utilisateur</label>
+        <input
+          id="username"
+          type="text"
+          [(ngModel)]="username"
+          name="username"
+          placeholder="Votre pseudo"
+          class="input-field"
+          required
+          autocomplete="username"
+        />
+      </div>
+
+      <div class="form-group" *ngIf="isRegisterMode">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          [(ngModel)]="email"
+          name="email"
+          placeholder="votre@email.com"
+          class="input-field"
+          required
+          autocomplete="email"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Mot de passe</label>
+        <input
+          id="password"
+          type="password"
+          [(ngModel)]="password"
+          name="password"
+          placeholder="••••••••"
+          class="input-field"
+          required
+          autocomplete="current-password"
+        />
+      </div>
+
+      <div class="error" *ngIf="error">{{ error }}</div>
+      
+      <button type="submit" class="btn-primary" [disabled]="loading">
+        {{ loading ? 'Chargement...' : (isRegisterMode ? 'S\'inscrire' : 'Se connecter') }}
+      </button>
+    </form>
+
+    <div class="toggle-mode">
+      <button type="button" class="btn-link" (click)="toggleMode()">
+        {{ isRegisterMode ? 'Déjà un compte ? Se connecter' : 'Pas de compte ? S\'inscrire' }}
+      </button>
+    </div>
+  </div>
+</div>
